@@ -1,38 +1,11 @@
-//------------------------------------------------------------------------------
-
-enum POKEMON_TYPE
-{
-	NORMAL = 1,
-	FIRE,
-	WATER,
-	ELECTRIC,
-	GRASS,
-	ICE,
-	FAIRY
-};
-
-typedef struct PokemonRecord
-{
-	unsigned int  id;
-	unsigned int  level;
-	unsigned char type;
-	char          name[10];
-} PokemonRecord;
-
-typedef struct TrainerRecord
-{
-	unsigned int id;
-	unsigned int money;
-	char         name[10];
-} TrainerRecord;
+#include <fcntl.h>
+#include <stdio.h>
+#include "page.h"
+#include "record.h"
 
 typedef void (*display_record_t)(void *);
 
 //------------------------------------------------------------------------------
-
-#include "page.h"
-#include <fcntl.h>
-#include <stdio.h>
 
 void display_pokemon_record(void *record)
 {
@@ -48,6 +21,21 @@ void display_trainer_record(void *record)
 
 	printf("Trainer id: %d, money: %d, name: %s\n", trainer->id, trainer->money,
 		   trainer->name);
+}
+
+void display_page_records(void *page, display_record_t display_func)
+{
+	PageHeader    *header = PAGE_HEADER(page);
+	RecordPointer *ptr    = (RECORD_POINTER_LIST(page));
+	void          *record;
+
+	for (int i = 0; i < header->n_records; i++)
+	{
+		record = page_get_record(page, i);
+		if (record == NULL)
+			continue;
+		display_func(record);
+	}
 }
 
 void add_pokemon_records(void *page)
@@ -75,21 +63,6 @@ void add_trainer_records(void *page)
 	page_add_record(page, &record_trainer[0], sizeof(TrainerRecord));
 	page_add_record(page, &record_trainer[1], sizeof(TrainerRecord));
 	page_add_record(page, &record_trainer[2], sizeof(TrainerRecord));
-}
-
-void display_page_records(void *page, display_record_t display_func)
-{
-	PageHeader    *header = PAGE_HEADER(page);
-	RecordPointer *ptr    = (RECORD_POINTER_LIST(page));
-	void          *record;
-
-	for (int i = 0; i < header->n_records; i++)
-	{
-		record = page_get_record(page, i);
-		if (record == NULL)
-			continue;
-		display_func(record);
-	}
 }
 
 int main()
