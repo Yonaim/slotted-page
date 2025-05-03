@@ -69,8 +69,8 @@ void add_trainer_records(void *page)
 {
 	TrainerRecord record_trainer[3];
 	record_trainer[0] = (TrainerRecord){.id = 1, .money = 1000, .name = "Dawn"};
-	record_trainer[0] = (TrainerRecord){.id = 2, .money = 500, .name = "Lucas"};
-	record_trainer[0] = (TrainerRecord){.id = 3, .money = 300, .name = "Barry"};
+	record_trainer[1] = (TrainerRecord){.id = 2, .money = 500, .name = "Lucas"};
+	record_trainer[2] = (TrainerRecord){.id = 3, .money = 300, .name = "Barry"};
 
 	page_add_record(page, &record_trainer[0], sizeof(TrainerRecord));
 	page_add_record(page, &record_trainer[1], sizeof(TrainerRecord));
@@ -111,7 +111,7 @@ int main()
 	save_page(fd, page[0]);
 	save_page(fd, page[1]);
 
-	loaded = load_page(fd, 0);
+	loaded = load_page(fd, 0); 
 	display_loaded_page(loaded, display_pokemon_record);
 
 	loaded = load_page(fd, 1);
