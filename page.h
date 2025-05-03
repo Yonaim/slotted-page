@@ -16,11 +16,6 @@ enum pageType
 	LEAF
 };
 
-typedef struct Page
-{
-	uint8_t  buf[PAGE_SIZE];
-} Page;
-
 // metadata of a page
 // location: start of allocated space
 typedef struct PageHeader
