@@ -15,6 +15,7 @@
 #include <string.h>
 #include <assert.h>
 #include <unistd.h>
+#include <stdio.h>
 
 void *page_create(enum pageType type, uint32_t id)
 {
@@ -53,16 +54,19 @@ void page_add_record(void *page, void *record, uint16_t size)
 
 void *page_get_record(void *page, uint16_t idx)
 {
-	RecordPointer *ptr = &((RECORD_POINTER_LIST(page))->list[idx]);
+	RecordPointer *ptr = (RECORD_POINTER_LIST(page)) + (idx * sizeof(RecordPointer));
 
-	return (page + ptr->location);
+	if (ptr->location == 0)
+		return (NULL);
+	else
+		return (page + ptr->location);
 }
 
 // Marks the record at 'idx' as deleted
 // The actual space reclaimed during compaction
 void page_remove_record(void *page, uint16_t idx)
 {
-	RecordPointer *ptr = &((RECORD_POINTER_LIST(page))->list[idx]);
+	RecordPointer *ptr = (RECORD_POINTER_LIST(page)) + (idx * sizeof(RecordPointer));
 
 	ptr->location = 0;
 	PAGE_HEADER(page)->flags |= PAGE_CAN_COMPACT;
