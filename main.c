@@ -79,14 +79,15 @@ void add_trainer_records(void *page)
 
 void display_loaded_page(void *page, display_record_t display_func)
 {
-	RecordPointerList *ptrs = RECORD_POINTER_LIST(page);
-	RecordPointer     *ptr;
-	void              *record;
+	PageHeader    *header = PAGE_HEADER(page);
+	RecordPointer *ptr    = (RECORD_POINTER_LIST(page));
+	void          *record;
 
-	for (int i = 0; i < ptrs->size; i++)
+	for (int i = 0; i < header->n_records; i++)
 	{
-		ptr    = &(ptrs->list[i]);
-		record = &(page[ptr->location]);
+		record = page_get_record(page, i);
+		if (record == NULL)
+			continue;
 		display_func(record);
 	}
 }
