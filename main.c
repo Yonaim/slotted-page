@@ -50,7 +50,7 @@ void display_trainer_record(void *record)
 		   trainer->name);
 }
 
-void add_pokemon_records(Page *page)
+void add_pokemon_records(void *page)
 {
 	PokemonRecord record_pokemon[3];
 	record_pokemon[0] = (PokemonRecord){
@@ -65,7 +65,7 @@ void add_pokemon_records(Page *page)
 	page_add_record(page, &record_pokemon[2], sizeof(PokemonRecord));
 }
 
-void add_trainer_records(Page *page)
+void add_trainer_records(void *page)
 {
 	TrainerRecord record_trainer[3];
 	record_trainer[0] = (TrainerRecord){.id = 1, .money = 1000, .name = "Dawn"};
@@ -77,16 +77,16 @@ void add_trainer_records(Page *page)
 	page_add_record(page, &record_trainer[2], sizeof(TrainerRecord));
 }
 
-void display_loaded_page(Page *page, display_record_t display_func)
+void display_loaded_page(void *page, display_record_t display_func)
 {
-	RecordPointerList *ptrs = page_record_pointer_list(page);
+	RecordPointerList *ptrs = RECORD_POINTER_LIST(page);
 	RecordPointer     *ptr;
 	void              *record;
 
 	for (int i = 0; i < ptrs->size; i++)
 	{
 		ptr    = &(ptrs->list[i]);
-		record = &(page->buf[ptr->location]);
+		record = &(page[ptr->location]);
 		display_func(record);
 	}
 }
@@ -94,8 +94,8 @@ void display_loaded_page(Page *page, display_record_t display_func)
 int main()
 {
 	int   fd;
-	Page *page[2];
-	Page *loaded;
+	void *page[2];
+	void *loaded;
 
 	fd = open("pokemon_world.db", O_RDWR | O_CREAT);
 
@@ -108,10 +108,10 @@ int main()
 	save_page(fd, page[0]);
 	save_page(fd, page[1]);
 
-	loaded = load_page(fd, page[0]->id);
+	loaded = load_page(fd, 0);
 	display_loaded_page(loaded, display_pokemon_record);
 
-	loaded = load_page(fd, page[1]->id);
+	loaded = load_page(fd, 1);
 	display_loaded_page(loaded, display_trainer_record);
 
 	return (0);
