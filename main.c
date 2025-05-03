@@ -77,7 +77,7 @@ void add_trainer_records(void *page)
 	page_add_record(page, &record_trainer[2], sizeof(TrainerRecord));
 }
 
-void display_loaded_page(void *page, display_record_t display_func)
+void display_page_records(void *page, display_record_t display_func)
 {
 	PageHeader    *header = PAGE_HEADER(page);
 	RecordPointer *ptr    = (RECORD_POINTER_LIST(page));
@@ -105,17 +105,24 @@ int main()
 	page[0] = page_create(LEAF, 0);
 	page[1] = page_create(LEAF, 1);
 
+	printf("\n=========== Add & Save & Load ===========\n\n");
+
 	add_pokemon_records(page[0]);
 	add_trainer_records(page[1]);
 
 	save_page(fd, page[0]);
 	save_page(fd, page[1]);
 
-	loaded = load_page(fd, 0); 
-	display_loaded_page(loaded, display_pokemon_record);
+	loaded = load_page(fd, 0);
+	display_page_records(loaded, display_pokemon_record);
 
 	loaded = load_page(fd, 1);
-	display_loaded_page(loaded, display_trainer_record);
+	display_page_records(loaded, display_trainer_record);
+
+	printf("\n=========== Remove & Compact ===========\n\n");
+	page_remove_record(page[0], 1);
+	page_compact(page[0]);
+	display_page_records(page[0], display_pokemon_record);
 
 	return (0);
 }
