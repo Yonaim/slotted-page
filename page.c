@@ -71,9 +71,23 @@ void page_remove_record(void *page, uint16_t idx)
 	PAGE_HEADER(page)->flags |= PAGE_CAN_COMPACT;
 }
 
-// TODO
 void page_compact(void *page)
 {
+	PageHeader *header = PAGE_HEADER(page);
+
+	if (!(header->flags & PAGE_CAN_COMPACT))
+		return;
+
+	void          *copy = page_create(header->type, header->id);
+	RecordPointer *ptr;
+
+	for (int i = 0; i < header->n_records; i++)
+	{
+		ptr = RECORD_POINTER(page, i);
+		if (ptr->location != 0)
+			page_add_record(copy, &page[ptr->location], ptr->size);
+	}
+	memcpy(page, copy, PAGE_SIZE);
 }
 
 // -------------- Persistent disk I/O (non-volatile storage) -------------------
