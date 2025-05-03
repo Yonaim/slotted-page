@@ -38,6 +38,7 @@ typedef struct RecordPointer
 #define PAGE_HEADER(page) ((PageHeader *)(page))
 #define RECORD_POINTER_LIST(page)                                              \
 	((RecordPointer *)((u_int8_t *)page + sizeof(PageHeader)))
+#define RECORD_POINTER(page, idx) (RECORD_POINTER_LIST(page)) + idx
 
 //------------------------------------------------------------------------------
 

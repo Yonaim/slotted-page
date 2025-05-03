@@ -45,7 +45,6 @@ void page_add_record(void *page, void *record, uint16_t size)
 	memcpy(&(page[header->free_start]), &add_ptr, sizeof(RecordPointer));
 	memcpy(&(page[add_ptr.location]), record, add_ptr.size);
 
-
 	header->n_records++;
 	header->free_start += sizeof(RecordPointer);
 	header->free_end -= size;
@@ -54,7 +53,7 @@ void page_add_record(void *page, void *record, uint16_t size)
 
 void *page_get_record(void *page, uint16_t idx)
 {
-	RecordPointer *ptr = RECORD_POINTER_LIST(page) + idx;
+	RecordPointer *ptr = RECORD_POINTER(page, idx);
 
 	if (ptr->location == 0)
 		return (NULL);
@@ -66,7 +65,7 @@ void *page_get_record(void *page, uint16_t idx)
 // The actual space reclaimed during compaction
 void page_remove_record(void *page, uint16_t idx)
 {
-	RecordPointer *ptr = (RECORD_POINTER_LIST(page)) + (idx * sizeof(RecordPointer));
+	RecordPointer *ptr = RECORD_POINTER(page, idx);
 
 	ptr->location = 0;
 	PAGE_HEADER(page)->flags |= PAGE_CAN_COMPACT;
