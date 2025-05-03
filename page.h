@@ -20,7 +20,8 @@ enum pageType
 // location: start of allocated space
 typedef struct PageHeader
 {
-	uint32_t id;
+	uint32_t      id;
+	uint16_t      n_records;
 	enum pageType type;
 	uint16_t      free_start;
 	uint16_t      free_end;
@@ -33,12 +34,6 @@ typedef struct RecordPointer
 	uint16_t location; // start offset of record
 	uint16_t size;     // size of record
 } RecordPointer;
-
-typedef struct RecordPointerList
-{
-	RecordPointer *list; // e.g list[2]
-	uint16_t       size; // size of pointer list
-} RecordPointerList;
 
 #define PAGE_HEADER(page) ((PageHeader *)(page))
 #define RECORD_POINTER_LIST(page) ((RecordPointerList *)((u_int8_t *)page + sizeof(PageHeader)))

@@ -18,11 +18,12 @@
 
 void *page_create(enum pageType type, uint32_t id)
 {
-	void       *page   = malloc(sizeof(Page));
+	void       *page   = malloc(PAGE_SIZE);
 	PageHeader *header = PAGE_HEADER(page);
 
-	memset(page, 0, sizeof(Page));
+	memset(page, 0, PAGE_SIZE);
 	header->id         = id;
+	header->n_records  = 0;
 	header->type       = type;
 	header->free_start = sizeof(PageHeader);
 	header->free_end   = PAGE_SIZE - 1;
@@ -32,18 +33,19 @@ void *page_create(enum pageType type, uint32_t id)
 
 void page_add_record(void *page, void *record, uint16_t size)
 {
-	PageHeader        *header = PAGE_HEADER(page);
-	RecordPointerList *ptrs   = RECORD_POINTER_LIST(page);
+	PageHeader *header = PAGE_HEADER(page);
 
-	assert(header->free_size < size);
+	assert(header->free_size >= size);
 
-	RecordPointer add_record;
-	add_record.location = (header->free_end) - size;
-	add_record.size     = size;
+	RecordPointer add_ptr;
+	add_ptr.location = (header->free_end) - size;
+	add_ptr.size     = size;
 
-	memcpy(&(page[header->free_start]), &add_record, sizeof(RecordPointer));
-	memcpy(&(page[add_record.location]), record, add_record.size);
+	memcpy(&(page[header->free_start]), &add_ptr, sizeof(RecordPointer));
+	memcpy(&(page[add_ptr.location]), record, add_ptr.size);
 
+
+	header->n_records++;
 	header->free_start += sizeof(RecordPointer);
 	header->free_end -= size;
 	header->free_size -= size;
