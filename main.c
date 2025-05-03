@@ -98,7 +98,9 @@ int main()
 	void *page[2];
 	void *loaded;
 
-	fd = open("pokemon_world.db", O_RDWR | O_CREAT);
+	fd = open("pokemon_world.db", O_RDWR | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+		return (1);
 
 	page[0] = page_create(LEAF, 0);
 	page[1] = page_create(LEAF, 1);
