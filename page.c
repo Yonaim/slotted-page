@@ -54,7 +54,7 @@ void page_add_record(void *page, void *record, uint16_t size)
 
 void *page_get_record(void *page, uint16_t idx)
 {
-	RecordPointer *ptr = (RECORD_POINTER_LIST(page)) + (idx * sizeof(RecordPointer));
+	RecordPointer *ptr = RECORD_POINTER_LIST(page) + idx;
 
 	if (ptr->location == 0)
 		return (NULL);
