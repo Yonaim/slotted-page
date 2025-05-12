@@ -27,7 +27,7 @@ void *page_create(enum pageType type, uint32_t id)
 	header->n_records  = 0;
 	header->type       = type;
 	header->free_start = sizeof(PageHeader);
-	header->free_end   = PAGE_SIZE - 1;
+	header->free_end   = PAGE_SIZE; // last used byte
 	header->free_size  = header->free_end - header->free_start;
 	return (page);
 }
